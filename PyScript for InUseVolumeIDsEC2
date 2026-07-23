@@ -1,0 +1,23 @@
+import boto3
+import json
+
+client = boto3.client('ec2')
+
+def lambda_handler(event, context):
+
+        response = client.describe_volumes()
+        volumes = response['Volumes']
+
+        in_use_volume_ids = []
+
+        for volume in volumes:
+            if volume['State'] == 'in-use':
+                in_use_volume_ids.append(volume['VolumeId'])
+        
+        print(f'The in-use volume ids are {in_use_volume_ids}')
+
+     # 1. Put your list inside a dictionary
+        final_result = {"in_use_volumes": in_use_volume_ids}
+    
+    # 2. Convert the dictionary to JSON and return it
+        return json.dumps(final_result)
