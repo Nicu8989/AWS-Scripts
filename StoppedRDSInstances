@@ -1,0 +1,22 @@
+import boto3
+import json
+
+client = boto3.client('rds')
+
+def lambda_handler(event, context):
+    # 1. Make the AWS call
+    response = client.describe_db_instances()
+
+    # 2. List comprehension
+    stopped_dbs = [
+        instance['DBInstanceIdentifier'] 
+        for instance in response['DBInstances'] 
+        if instance['DBInstanceStatus'] == 'stopped'
+    ]
+    
+    # 3. Print once (properly indented to the left)
+    print(f'The stopped rds are {stopped_dbs}')
+
+    # 4. Return as JSON
+    final_result = {"stopped_databases": stopped_dbs}
+    return json.dumps(final_result)
