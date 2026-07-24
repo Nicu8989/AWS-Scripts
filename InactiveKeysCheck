@@ -1,0 +1,18 @@
+import boto3
+import json
+
+client = boto3.client('iam')
+
+def lambda_handler(event, context):
+    response = client.list_access_keys()
+
+    inactive_keys = [
+        key['AccessKeyId']
+        for key in response['AccessKeyMetadata']
+        if key['Status'] == 'Inactive'
+    ]
+
+    print(f'The inactive keyes are {inactive_keys}')
+
+    final_result = {'keys_to_delete': inactive_keys}
+    return json.dumps(final_result)
