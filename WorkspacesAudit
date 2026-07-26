@@ -1,0 +1,19 @@
+import boto3
+import json
+
+client = boto3.client('workspaces')
+
+def lambda_handler(event, context):
+    response = client.describe_workspaces()
+    inactive_desktops =[
+        workspace['WorkspaceId']
+        for workspace in response['Workspaces']
+        if workspace['State'] == 'STOPPED'
+        ]
+
+    print(f'The stopped workspaces are {inactive_desktops}')
+
+    final_result = {'desktops to delete': inactive_desktops}
+
+    return json.dumps(final_result)
+
